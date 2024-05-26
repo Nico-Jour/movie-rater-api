@@ -1,17 +1,19 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { CreateMovieListDto } from './dto/create-movie-list.dto';
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 import { UpdateMovieListDto } from './dto/update-movie-list.dto';
-import { MovieListModel } from './entities/movie-list.schema';
+import { MovieList, MovieListModel } from './entities/movie-list.schema';
 
 @Injectable()
 export class MovieListService {
-  constructor(@Inject() private movieListModel: MovieListModel) {}
+  constructor(
+    @InjectModel(MovieList.name) private movieListModel: MovieListModel,
+  ) {}
 
-  create(createMovieListDto: CreateMovieListDto) {
-    return 'This action adds a new movieList';
+  async create(userId: string) {
+    return await this.movieListModel.create({ userId });
   }
 
-  async findAll(userId) {
+  async findAll(userId: string) {
     return await this.movieListModel.find({ userId });
   }
 

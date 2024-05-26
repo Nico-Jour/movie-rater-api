@@ -12,5 +12,6 @@ import { MovieListService } from './movie-list.service';
   ],
   controllers: [MovieListController],
   providers: [MovieListService],
+  exports: [MovieListService],
 })
 export class MovieListModule {}
