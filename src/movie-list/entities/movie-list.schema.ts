@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ArrayMaxSize } from 'class-validator';
 import { Document, Model } from 'mongoose';
+import { MAX_LIST_MOVIES } from 'src/constants';
 import { BaseDocument } from 'src/types/base-documents';
 
 @Schema()
@@ -9,7 +10,7 @@ export class MovieList extends BaseDocument {
   userId: string;
 
   @Prop({ type: [String], required: true, default: [] })
-  @ArrayMaxSize(3)
+  @ArrayMaxSize(MAX_LIST_MOVIES)
   list: string[];
 }
 

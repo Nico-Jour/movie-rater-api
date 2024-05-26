@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { UpdateMovieListDto } from './dto/update-movie-list.dto';
+import { MAX_LIST_MOVIES } from 'src/constants';
 import { MovieList, MovieListModel } from './entities/movie-list.schema';
 
 @Injectable()
@@ -21,32 +21,20 @@ export class MovieListService {
     return await this.movieListModel.find({ userId: id });
   }
 
-  async update(userId: string, updateMovieListDto: UpdateMovieListDto) {
+  async update(userId: string, movieId: string) {
     const [movieList] = await this.movieListModel.find({ userId });
 
-    if (movieList.list.length >= 3) {
+    if (movieList.list.length >= MAX_LIST_MOVIES) {
       throw new HttpException(
         `Bad request: the maximum number of movies is reached, delete one and retry`,
         HttpStatus.BAD_REQUEST,
       );
-    } else if (movieList.list.includes(updateMovieListDto.movieId)) {
-      throw new HttpException(
-        `Bad request: this movie is already in the list`,
-        HttpStatus.BAD_REQUEST,
-      );
+    } else if (movieList.list.includes(movieId)) {
+      const list = movieList.list.filter((id) => id != movieId);
+      return await this.movieListModel.updateOne({ userId }, { list });
     } else {
-      movieList.list.push(updateMovieListDto.movieId);
+      const list = [...movieList.list, movieId];
+      return await this.movieListModel.updateOne({ userId }, { list });
     }
-
-    return await this.movieListModel.updateOne(
-      { _id: movieList._id },
-      {
-        list: movieList.list,
-      },
-    );
-  }
-
-  remove(userId: string, movieId: string) {
-    return;
   }
 }
