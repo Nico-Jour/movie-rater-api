@@ -1,4 +1,6 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateMovieListDto } from './create-movie-list.dto';
+import { IsString } from 'class-validator';
 
-export class UpdateMovieListDto extends PartialType(CreateMovieListDto) {}
+export class UpdateMovieListDto {
+  @IsString()
+  movieId: string;
+}

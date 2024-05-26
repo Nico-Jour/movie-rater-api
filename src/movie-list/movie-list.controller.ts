@@ -12,17 +12,14 @@ export class MovieListController {
     return this.movieListService.findAll(userId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.movieListService.findOne(+id);
+  @Get()
+  findOne(@UserId() id: string) {
+    return this.movieListService.findOne(id);
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateMovieListDto: UpdateMovieListDto,
-  ) {
-    return this.movieListService.update(+id, updateMovieListDto);
+  @Patch()
+  update(@UserId() id: string, @Body() updateMovieListDto: UpdateMovieListDto) {
+    return this.movieListService.update(id, updateMovieListDto);
   }
 
   @Delete(':id')
