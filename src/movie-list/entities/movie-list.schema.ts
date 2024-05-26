@@ -4,7 +4,7 @@ import { Document, Model } from 'mongoose';
 
 @Schema()
 export class MovieList {
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: true, unique: true })
   userId: string;
 
   @Prop({ type: [String], required: true, default: [] })
