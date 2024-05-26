@@ -1,11 +1,16 @@
 import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { MovieListModule } from './movie-list/movie-list.module';
 import { UsersModule } from './users/users.module';
-import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
-  imports: [UsersModule, MongooseModule.forRoot('mongodb://localhost/nest')],
+  imports: [
+    UsersModule,
+    MongooseModule.forRoot('mongodb://localhost:27017/movie-rater-db'),
+    MovieListModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
