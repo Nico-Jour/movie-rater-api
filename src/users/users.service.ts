@@ -13,8 +13,8 @@ export class UsersService {
     return createdUser;
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAllVoted() {
+    return 'all voted users';
   }
 
   findOne(id: number) {
