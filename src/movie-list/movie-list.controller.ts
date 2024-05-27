@@ -16,6 +16,11 @@ export class MovieListController {
     return this.movieListService.findMostRated();
   }
 
+  @Get('all-voters')
+  findAllVoters(@UserId() userId: string) {
+    return this.movieListService.findAllVoters(userId);
+  }
+
   @Patch(':movieId')
   update(@UserId() userId: string, @Param('movieId') movieId: string) {
     return this.movieListService.update(userId, movieId);

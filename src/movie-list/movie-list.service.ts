@@ -1,14 +1,22 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  forwardRef,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { MAX_LIST_MOVIES } from 'src/constants';
 import { OmdbApiService } from 'src/omdbApi/omdbApi.service';
 import { Movie } from 'src/types/movie';
+import { UsersService } from 'src/users/users.service';
 import { MovieList, MovieListModel } from './entities/movie-list.schema';
 
 @Injectable()
 export class MovieListService {
   constructor(
     @InjectModel(MovieList.name) private movieListModel: MovieListModel,
+    @Inject(forwardRef(() => UsersService)) private usersService: UsersService,
     private readonly omdbApiService: OmdbApiService,
   ) {}
 
@@ -90,5 +98,19 @@ export class MovieListService {
     const list = movieList.list.filter((id) => id != movieId);
 
     return await this.movieListModel.updateOne({ userId }, { list });
+  }
+
+  async findAllVoters(userId: string) {
+    const allNonEmptyList = await this.movieListModel.find(
+      { list: { $ne: [], $exists: true } },
+      { userId: 1, _id: 0 },
+    );
+
+    let pseudoVotersList = [];
+    for (const { userId } of allNonEmptyList) {
+      const { pseudo } = await this.usersService.findOne(userId);
+      pseudoVotersList.push(pseudo);
+    }
+    return pseudoVotersList;
   }
 }

@@ -14,9 +14,4 @@ export class CreateUserDto {
   @IsNotEmpty()
   @Type(() => Date)
   readonly dateOfBirth: Date;
-
-  @IsDate()
-  @IsNotEmpty()
-  @Type(() => Date)
-  readonly creationDate: Date;
 }

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import {
   MovieList,
@@ -15,9 +15,10 @@ import { UsersService } from './users.service';
       { name: User.name, schema: UserSchema },
       { name: MovieList.name, schema: MovieListSchema },
     ]),
-    MovieListModule,
+    forwardRef(() => MovieListModule),
   ],
   controllers: [UsersController],
+  exports: [UsersService],
   providers: [UsersService],
 })
 export class UsersModule {}

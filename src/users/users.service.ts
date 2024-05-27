@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  forwardRef,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { MovieListService } from 'src/movie-list/movie-list.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -9,6 +15,7 @@ import { User, UserModel } from './entities/user.schema';
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: UserModel,
+    @Inject(forwardRef(() => MovieListService))
     private movielistService: MovieListService,
   ) {}
 
