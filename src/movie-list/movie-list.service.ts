@@ -1,28 +1,65 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { MAX_LIST_MOVIES } from 'src/constants';
+import { OmdbApiService } from 'src/omdbApi/omdbApi.service';
+import { Movie } from 'src/types/movie';
 import { MovieList, MovieListModel } from './entities/movie-list.schema';
 
 @Injectable()
 export class MovieListService {
   constructor(
     @InjectModel(MovieList.name) private movieListModel: MovieListModel,
+    private readonly omdbApiService: OmdbApiService,
   ) {}
 
   async create(userId: string) {
     return await this.movieListModel.create({ userId });
   }
 
-  async findAll(userId: string) {
-    return await this.movieListModel.find({ userId });
+  async findMostRated() {
+    const result = await this.movieListModel.aggregate([
+      { $unwind: '$list' },
+      {
+        $group: {
+          _id: '$list',
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { count: -1 } },
+      { $limit: 1 },
+    ]);
+
+    if (result.length === 0) {
+      console.log('No votes found');
+      throw new HttpException('No votes found', HttpStatus.NOT_FOUND);
+    }
+
+    const mostVotedMovieId = result[0]._id;
+
+    const { Title: title, Poster: poster } =
+      await this.omdbApiService.get<Movie>('', { i: mostVotedMovieId });
+
+    return { title, poster };
   }
 
-  async findOne(id: string) {
-    return await this.movieListModel.find({ userId: id });
+  async findOne(userId: string) {
+    const [movieList] = await this.movieListModel.find({ userId });
+    const result = [];
+    for (const movieId of movieList.list) {
+      try {
+        const { Title: title, Poster: poster } =
+          await this.omdbApiService.get<Movie>('', { i: movieId });
+        result.push({ title, poster });
+      } catch (err) {
+        throw new HttpException(err, HttpStatus.BAD_REQUEST);
+      }
+    }
+    return result;
   }
 
   async update(userId: string, movieId: string) {
     const [movieList] = await this.movieListModel.find({ userId });
+    let list = [];
 
     if (movieList.list.length >= MAX_LIST_MOVIES) {
       throw new HttpException(
@@ -30,11 +67,10 @@ export class MovieListService {
         HttpStatus.BAD_REQUEST,
       );
     } else if (movieList.list.includes(movieId)) {
-      const list = movieList.list.filter((id) => id != movieId);
-      return await this.movieListModel.updateOne({ userId }, { list });
+      list = movieList.list.filter((id) => id != movieId);
     } else {
-      const list = [...movieList.list, movieId];
-      return await this.movieListModel.updateOne({ userId }, { list });
+      list = [...movieList.list, movieId];
     }
+    return await this.movieListModel.updateOne({ userId }, { list });
   }
 }

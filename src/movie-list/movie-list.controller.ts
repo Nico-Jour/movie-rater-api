@@ -7,13 +7,13 @@ export class MovieListController {
   constructor(private readonly movieListService: MovieListService) {}
 
   @Get()
-  findAll(@UserId() userId: string) {
-    return this.movieListService.findAll(userId);
-  }
-
-  @Get()
   findOne(@UserId() id: string) {
     return this.movieListService.findOne(id);
+  }
+
+  @Get('most-rated')
+  findMostRated() {
+    return this.movieListService.findMostRated();
   }
 
   @Patch(':movieId')
