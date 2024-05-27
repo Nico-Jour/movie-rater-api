@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Patch } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Patch } from '@nestjs/common';
 import { UserId } from 'src/decorator/userId.decorator';
 import { MovieListService } from './movie-list.service';
 
@@ -17,8 +17,12 @@ export class MovieListController {
   }
 
   @Patch(':movieId')
-  update(@UserId() id: string, @Param('movieId') movieId: string) {
-    console.log('id, movieId', id, movieId);
-    return this.movieListService.update(id, movieId);
+  update(@UserId() userId: string, @Param('movieId') movieId: string) {
+    return this.movieListService.update(userId, movieId);
+  }
+
+  @Delete(':movieId')
+  delete(@UserId() userId: string, @Param('movieId') movieId: string) {
+    return this.movieListService.delete(userId, movieId);
   }
 }

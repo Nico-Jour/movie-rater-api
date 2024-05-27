@@ -67,10 +67,28 @@ export class MovieListService {
         HttpStatus.BAD_REQUEST,
       );
     } else if (movieList.list.includes(movieId)) {
-      list = movieList.list.filter((id) => id != movieId);
+      throw new HttpException(
+        `Bad request: the movie is already in this list`,
+        HttpStatus.BAD_REQUEST,
+      );
     } else {
       list = [...movieList.list, movieId];
     }
+    return await this.movieListModel.updateOne({ userId }, { list });
+  }
+
+  async delete(userId: string, movieId: string) {
+    const [movieList] = await this.movieListModel.find({ userId });
+
+    if (!movieList.list.includes(movieId)) {
+      throw new HttpException(
+        `Bad request: the movie was not in this list`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const list = movieList.list.filter((id) => id != movieId);
+
     return await this.movieListModel.updateOne({ userId }, { list });
   }
 }
