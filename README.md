@@ -1,6 +1,7 @@
 ## Description
 
 Movie-Rater-Api is a project that let's you vote for your favorite movie and keep track of all the votes and the most voted one.
+To interact with this server, you can use the web application at this repo: https://github.com/Nico-Jour/Blablamovie.git
 
 ## Installation
 
