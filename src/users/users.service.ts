@@ -38,6 +38,10 @@ export class UsersService {
     return await this.userModel.findById(id);
   }
 
+  async findByPseudo(pseudo: string) {
+    return await this.userModel.find({ pseudo });
+  }
+
   update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
   }

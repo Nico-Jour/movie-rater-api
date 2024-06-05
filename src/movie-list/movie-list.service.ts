@@ -38,7 +38,6 @@ export class MovieListService {
     ]);
 
     if (result.length === 0) {
-      console.log('No votes found');
       throw new HttpException('No votes found', HttpStatus.NOT_FOUND);
     }
 
@@ -47,7 +46,7 @@ export class MovieListService {
     const { Title: title, Poster: poster } =
       await this.omdbApiService.get<Movie>('', { i: mostVotedMovieId });
 
-    return { title, poster };
+    return { title, poster, imdbId: mostVotedMovieId };
   }
 
   async findOne(userId: string) {
@@ -57,7 +56,7 @@ export class MovieListService {
       try {
         const { Title: title, Poster: poster } =
           await this.omdbApiService.get<Movie>('', { i: movieId });
-        result.push({ title, poster });
+        result.push({ title, poster, imdbId: movieId });
       } catch (err) {
         throw new HttpException(err, HttpStatus.BAD_REQUEST);
       }

@@ -7,7 +7,6 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { UserId } from 'src/decorator/userId.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
@@ -26,9 +25,9 @@ export class UsersController {
     return this.usersService.findAllVoted();
   }
 
-  @Get()
-  findOne(@UserId() id: string) {
-    return this.usersService.findOne(id);
+  @Post('login')
+  findOne(@Body() { pseudo }: { pseudo: string }) {
+    return this.usersService.findByPseudo(pseudo);
   }
 
   @Patch(':id')
